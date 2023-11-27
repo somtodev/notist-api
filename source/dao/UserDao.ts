@@ -1,4 +1,3 @@
-import { DaoError } from "../types/errors";
 import User from "../models/User";
 import Dao from "./Dao";
 import IDao from "./types/IDao";
@@ -10,7 +9,7 @@ export class UserDao implements IDao<User> {
     this.dao = new Dao();
   }
 
-  async create(user: User): Promise<boolean | DaoError> {
+  async create(user: User): Promise<boolean> {
     let sql =
       "INSERT INTO users VALUES (null, $email, $firstname, $lastname, $password)";
     let params = {
@@ -22,7 +21,15 @@ export class UserDao implements IDao<User> {
     return this.dao.run(sql, params);
   }
 
-  update(user: User): Promise<boolean | DaoError> {
+  async findByEmail(email: string): Promise<Object> {
+    let sql = "SELECT * FROM users WHERE email = $email";
+    let params = {
+      $email: email,
+    };
+    return this.dao.findOne(sql, params);
+  }
+
+  async update(user: User): Promise<boolean> {
     let sql =
       "UPDATE users SET firstname=$firsname, lastname=$lastname, email=$email, password=$password WHERE id=$id";
     let params = {
@@ -35,11 +42,15 @@ export class UserDao implements IDao<User> {
     return this.dao.run(sql, params);
   }
 
-  exists(key: string): Promise<boolean> {
+  async exists(key: string): Promise<boolean> {
     let sql = "SELECT count(*) as found FROM users WHERE email = $email";
     let params = {
       $email: key,
     };
     return this.dao.existsOne(sql, params);
+  }
+
+  fetchAll(pk: string | number): Promise<User[]> {
+    throw new Error("Unimplemented");
   }
 }

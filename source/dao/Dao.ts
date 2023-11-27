@@ -1,15 +1,29 @@
 import { database } from "../db";
-import { DaoError } from "../types/errors";
+import Note from "../models/Note";
+import { CustomException } from "../types/errors";
 import ICommon from "./types/ICommon";
 
 export default class Dao implements ICommon {
+  findAllByFK(sql: string, params: Record<any, any>): Promise<Array<Note>> {
+    return new Promise(function (resolve, reject) {
+      let stmt = database.prepare(sql);
+      stmt.all(params, function (err, rows) {
+        if (err) {
+          reject(new CustomException(400, "Invalid arguments"));
+        } else {
+          resolve(rows as Array<Note>);
+        }
+      });
+    });
+  }
+
   findAll(sql: string): Promise<Array<any>> {
     return new Promise(function (resolve, reject) {
       database.all(sql, function (err, rows) {
         if (err) {
-          reject(new DaoError(20, "Internal server error"));
+          reject(new Error("Internal server error"));
         } else if (rows === null || rows.length === 0) {
-          reject(new DaoError(21, "Entity not found"));
+          reject(new Error("Entity not found"));
         } else {
           resolve(rows);
         }
@@ -22,9 +36,7 @@ export default class Dao implements ICommon {
       let stmt = database.prepare(sql);
       stmt.all(params, function (err, rows) {
         if (err) {
-          reject(new DaoError(11, "Invalid arguments"));
-        } else if (rows === null || rows.length === 0) {
-          reject(new DaoError(21, "Entity not found"));
+          reject(new CustomException(400, "Invalid arguments"));
         } else {
           let row = rows[0] as Object;
           resolve(row);
@@ -38,14 +50,13 @@ export default class Dao implements ICommon {
       let stmt = database.prepare(sql);
       stmt.each(params, function (err, row: Record<string, number>) {
         if (err) {
-          reject(new DaoError(20, "Internal server error"));
+          reject(new Error("Internal server error"));
         } else if (row) {
           let count = row["found"];
           if (count > 0) resolve(true);
           resolve(false);
         } else {
-          console.trace(row);
-          reject(new DaoError(21, "Entity not found"));
+          reject(new Error("Entity not found"));
         }
       });
     });
@@ -58,14 +69,9 @@ export default class Dao implements ICommon {
         if (this.changes === 1) {
           resolve(true);
         } else if (this.changes === 0) {
-          reject(new DaoError(21, "Entity Not Found"));
+          reject(new Error("Entity Not Found"));
         } else {
-          const errno: number = error?.errno;
-          const code: string = error?.code;
-          if (errno && code) {
-            reject(new DaoError(errno, code));
-          }
-          reject(new DaoError(11, "Invalid Arguments"));
+          reject(new Error("Invalid Arguments"));
         }
       });
     });
