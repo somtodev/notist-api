@@ -17,8 +17,10 @@ function init() {
     `
       CREATE TABLE IF NOT EXISTS notes(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title VARCHAR(255),
         content TEXT,
-        user_id INTEGER
+        user_id INTEGER,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
       );
     `,
   );

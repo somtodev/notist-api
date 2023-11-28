@@ -6,8 +6,10 @@ export default function logger(
   next: NextFunction,
 ) {
   const { url, method } = req;
+  const { statusCode } = res;
+  const status = statusCode ?? "---";
   const date = new Date().toISOString();
-  const template = `${date} | ${method} | ${url} | `;
+  const template = `${date} | ${method} | ${url} | ${status} `;
   drawLine();
   console.log(template);
   drawLine();

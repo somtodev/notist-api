@@ -5,23 +5,47 @@ import { authorizedUser } from "../middlwares/auth.middleware";
 const router = Router();
 const controller = new NoteController();
 
-router.post("/new", authorizedUser, async (req: Request, res: Response) => {
-  controller.createNote(req, res);
-});
-
+/**
+ * Retrieves all the notes from the database
+ */
 router.get(
-  "/all",
+  "/",
   authorizedUser,
   (req: Request, res: Response, next: NextFunction) => {
-    controller.getAllNotes(req, res).catch(next);
+    controller.retreiveAllNotes(req, res).catch(next);
   },
 );
 
+/**
+ * Creates a new note...
+ */
+router.post(
+  "/",
+  authorizedUser,
+  (req: Request, res: Response, next: NextFunction) => {
+    controller.createNote(req, res).catch(next);
+  },
+);
+
+/**
+ * Updates a note...
+ */
 router.post(
   "/:id",
   authorizedUser,
   (req: Request, res: Response, next: NextFunction) => {
     controller.updateNote(req, res).catch(next);
+  },
+);
+
+/**
+ * Delete a note...
+ */
+router.delete(
+  "/:id",
+  authorizedUser,
+  (req: Request, res: Response, next: NextFunction) => {
+    controller.deleteNote(req, res).catch(next);
   },
 );
 

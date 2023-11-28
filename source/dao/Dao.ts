@@ -1,17 +1,16 @@
 import { database } from "../db";
-import Note from "../models/Note";
 import { CustomException } from "../types/errors";
-import ICommon from "./types/ICommon";
+import SqlImp from "./types/SqlImp";
 
-export default class Dao implements ICommon {
-  findAllByFK(sql: string, params: Record<any, any>): Promise<Array<Note>> {
+export default class Dao<T> implements SqlImp<T> {
+  findAllByFK(sql: string, params: Record<any, any>): Promise<Array<T>> {
     return new Promise(function (resolve, reject) {
       let stmt = database.prepare(sql);
       stmt.all(params, function (err, rows) {
         if (err) {
           reject(new CustomException(400, "Invalid arguments"));
         } else {
-          resolve(rows as Array<Note>);
+          resolve(rows as Array<T>);
         }
       });
     });
@@ -31,14 +30,14 @@ export default class Dao implements ICommon {
     });
   }
 
-  findOne(sql: string, params: Record<any, any>): Promise<Object> {
+  findOne(sql: string, params: Record<any, any>): Promise<T> {
     return new Promise(function (resolve, reject) {
       let stmt = database.prepare(sql);
       stmt.all(params, function (err, rows) {
         if (err) {
           reject(new CustomException(400, "Invalid arguments"));
         } else {
-          let row = rows[0] as Object;
+          let row = rows[0] as T;
           resolve(row);
         }
       });
@@ -66,7 +65,7 @@ export default class Dao implements ICommon {
     return new Promise(function (resolve, reject) {
       let statement = database.prepare(sql);
       statement.run(params, function (error) {
-        if (this.changes === 1) {
+        if (this.changes >= 1) {
           resolve(true);
         } else if (this.changes === 0) {
           reject(new Error("Entity Not Found"));

@@ -1,8 +1,8 @@
 import User from "../models/User";
 import Dao from "./Dao";
-import IDao from "./types/IDao";
+import CommonOperations from "./types/CommonOperations";
 
-export class UserDao implements IDao<User> {
+export class UserDao implements CommonOperations<User> {
   private dao: Dao;
 
   constructor() {
@@ -50,7 +50,7 @@ export class UserDao implements IDao<User> {
     return this.dao.existsOne(sql, params);
   }
 
-  fetchAll(pk: string | number): Promise<User[]> {
+  retreiveAll(pk: string | number): Promise<User[]> {
     throw new Error("Unimplemented");
   }
 }

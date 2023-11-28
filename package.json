@@ -5,7 +5,7 @@
   "type": "NodeNext",
   "scripts": {
     "start": "npm run serve",
-    "serve": "ts-node-dev --transpile-only --respawn ./source/app.ts"
+    "serve": "ts-node-dev --transpile-only --respawn ./source/server.ts"
   },
   "author": "somtodev",
   "license": "ISC",
