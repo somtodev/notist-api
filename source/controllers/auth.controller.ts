@@ -16,25 +16,25 @@ export default class AuthController {
     const { firstname, lastname, email, password } = req.body;
 
     if (!firstname || firstname === "") {
-      throw new CustomException(400, "Enter Firstname");
+      throw new CustomException(206, "Enter Firstname");
     }
 
     if (!lastname || lastname === "") {
-      throw new CustomException(400, "Enter Lastname");
+      throw new CustomException(206, "Enter Lastname");
     }
 
     if (!email || email === "") {
-      throw new CustomException(400, "Enter Email");
+      throw new CustomException(206, "Enter Email");
     }
 
     if (!password || password === "") {
-      throw new CustomException(400, "Enter Password");
+      throw new CustomException(206, "Enter Password");
     }
 
     const existingUser = await this.dao.exists(email);
 
     if (existingUser) {
-      throw new CustomException(400, "Account with email exists");
+      throw new CustomException(409, "Account with email exists");
     }
 
     const user: User = new User(
@@ -63,7 +63,7 @@ export default class AuthController {
     const matchedPassword = await verifyPayload(user.password, password);
 
     if (!matchedPassword) {
-      res.status(400);
+      res.status(401);
       res.send("Invalid Password");
       return;
     }
