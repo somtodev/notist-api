@@ -3,7 +3,7 @@ import Dao from "./Dao";
 import CommonOperations from "./types/CommonOperations";
 
 export class UserDao implements CommonOperations<User> {
-  private dao: Dao;
+  private dao: Dao<User>;
 
   constructor() {
     this.dao = new Dao();
@@ -21,7 +21,7 @@ export class UserDao implements CommonOperations<User> {
     return this.dao.run(sql, params);
   }
 
-  async findByEmail(email: string): Promise<Object> {
+  async findByEmail(email: string): Promise<User> {
     let sql = "SELECT * FROM users WHERE email = $email";
     let params = {
       $email: email,
@@ -31,13 +31,12 @@ export class UserDao implements CommonOperations<User> {
 
   async update(user: User): Promise<boolean> {
     let sql =
-      "UPDATE users SET firstname=$firsname, lastname=$lastname, email=$email, password=$password WHERE id=$id";
+      "UPDATE users SET firstname = $firsname, lastname = $lastname WHERE id=$id";
     let params = {
       $id: user.id,
       $firstname: user.firstname,
       $lastname: user.lastname,
       $email: user.email,
-      $password: user.password,
     };
     return this.dao.run(sql, params);
   }
@@ -48,6 +47,14 @@ export class UserDao implements CommonOperations<User> {
       $email: key,
     };
     return this.dao.existsOne(sql, params);
+  }
+
+  deleteOne(id: string | number): Promise<boolean> {
+    throw new Error("Unimplemented");
+  }
+
+  retreiveOne(id: string, pk: string): Promise<User> {
+    throw new Error("Unimplemented");
   }
 
   retreiveAll(pk: string | number): Promise<User[]> {

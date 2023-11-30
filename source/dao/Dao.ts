@@ -1,5 +1,6 @@
 import { database } from "../db";
 import { CustomException } from "../types/errors";
+import DaoException from "../types/errors/DaoException";
 import SqlImp from "./types/SqlImp";
 
 export default class Dao<T> implements SqlImp<T> {
@@ -8,7 +9,7 @@ export default class Dao<T> implements SqlImp<T> {
       let stmt = database.prepare(sql);
       stmt.all(params, function (err, rows) {
         if (err) {
-          reject(new CustomException(400, "Invalid arguments"));
+          reject(new DaoException(11));
         } else {
           resolve(rows as Array<T>);
         }
@@ -20,9 +21,9 @@ export default class Dao<T> implements SqlImp<T> {
     return new Promise(function (resolve, reject) {
       database.all(sql, function (err, rows) {
         if (err) {
-          reject(new Error("Internal server error"));
+          reject(new CustomException(500, "Internal server error"));
         } else if (rows === null || rows.length === 0) {
-          reject(new Error("Entity not found"));
+          reject(new DaoException(21));
         } else {
           resolve(rows);
         }
@@ -35,7 +36,7 @@ export default class Dao<T> implements SqlImp<T> {
       let stmt = database.prepare(sql);
       stmt.all(params, function (err, rows) {
         if (err) {
-          reject(new CustomException(400, "Invalid arguments"));
+          reject(new DaoException(11));
         } else {
           let row = rows[0] as T;
           resolve(row);
@@ -49,13 +50,13 @@ export default class Dao<T> implements SqlImp<T> {
       let stmt = database.prepare(sql);
       stmt.each(params, function (err, row: Record<string, number>) {
         if (err) {
-          reject(new Error("Internal server error"));
+          reject(new CustomException(500, "Internal server error"));
         } else if (row) {
           let count = row["found"];
           if (count > 0) resolve(true);
           resolve(false);
         } else {
-          reject(new Error("Entity not found"));
+          reject(new DaoException(21));
         }
       });
     });
@@ -68,9 +69,9 @@ export default class Dao<T> implements SqlImp<T> {
         if (this.changes >= 1) {
           resolve(true);
         } else if (this.changes === 0) {
-          reject(new Error("Entity Not Found"));
+          reject(new DaoException(21));
         } else {
-          reject(new Error("Invalid Arguments"));
+          reject(new DaoException(11));
         }
       });
     });

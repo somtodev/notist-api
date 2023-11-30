@@ -34,7 +34,7 @@ export default class AuthController {
     const existingUser = await this.dao.exists(email);
 
     if (existingUser) {
-      throw new CustomException(400, "User Exists");
+      throw new CustomException(400, "Account with email exists");
     }
 
     const user: User = new User(
@@ -47,7 +47,7 @@ export default class AuthController {
     if (userCreated) {
       res.status(200);
       res.json({
-        message: "User Created",
+        message: "Account Created",
       });
     }
   }
@@ -70,7 +70,7 @@ export default class AuthController {
 
     res.status(200);
     res.json({
-      message: "Logged In",
+      message: "Welcome, " + user.firstname,
       token: generateToken(user),
     });
   }
